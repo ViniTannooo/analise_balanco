@@ -1,20 +1,18 @@
 import requests
 import pandas as pd
 
-url = "https://laboratoriodefinancas.com/api/v2"
-token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc2NTEzMTk1LCJpYXQiOjE3NzM5MjExOTUsImp0aSI6ImU2ZGFhM2U5ZGEzMzQzNzJiMzAwMTNmNzNkMTVkNzczIiwidXNlcl9pZCI6IjExMCJ9.aNw1HPkLXRviOgrZmrX7eCp6ZSBv0M-gLcQ6XT3nz2c"
+base_url = "https://laboratoriodefinancas.com/api/v2"
+token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc3MTE2Nzk2LCJpYXQiOjE3NzQ1MjQ3OTYsImp0aSI6IjFmZTg2MzE3NzU3MTRmNDY4Y2UyZWFmMTdkZmUxYWQ4IiwidXNlcl9pZCI6IjExMiJ9.MwFBcwADjVPl8mqIn06OT7cvU-Aao12HiWiQQkwCjYc"
 resp = requests.get(
-    f"{url}/bolsa/planilhao",
+    f"{base_url}/bolsa/planilhao",
     headers={"Authorization": f"Bearer {token}"},
-    params={'data_base': '2026-03-23'},
+    params={"data_base": "2025-03-21"}
 )
+
 dados = resp.json()
 df = pd.DataFrame(dados)
-maximo = df["roe"].max()
-filtro = df["roe"]==maximo
-df[filtro]
-
-
-url = "https://laboratoriodefinancas.com/api/v2"
-token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc2NTEzMTk1LCJpYXQiOjE3NzM5MjExOTUsImp0aSI6ImU2ZGFhM2U5ZGEzMzQzNzJiMzAwMTNmNzNkMTVkNzczIiwidXNlcl9pZCI6IjExMCJ9.aNw1HPkLXRviOgrZmrX7eCp6ZSBv0M-gLcQ6XT3nz2c"
-params = = {"ticker": "ibov", "data_uni":"2025-03-21", }
+df2 = df[["ticker", "roe", "p_vp"]]
+df2["rank_roe"] = df2["roe"].rank()
+df2["rank_p_vp"] = df2["p_vp"].rank(ascending=True)
+df2["rank_final"] = (df2["rank_roe"] + df2["rank_p_vp"]) / 2
+df2.sort_values("rank_final", ascending=False)

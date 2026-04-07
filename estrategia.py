@@ -16,3 +16,4 @@ df2["rank_roe"] = df2["roe"].rank()
 df2["rank_p_vp"] = df2["p_vp"].rank(ascending=True)
 df2["rank_final"] = (df2["rank_roe"] + df2["rank_p_vp"]) / 2
 df2.sort_values("rank_final", ascending=False)
+
